@@ -58,7 +58,7 @@
     <article>
       <h2>HCL</h2>
       <p>Terraform uses its own configuration language, but you have an option to use plain JSON</p>
-      <script data-lang="tf">
+      <script type="text/html" data-lang="tf">
 resource "aws_vpc" "main" {
   cidr_block = var.base_cidr_block
 }
@@ -83,10 +83,12 @@ resource "aws_vpc" "main" {
     <article>
       <h2>Providers</h2>
       <p>Terraform is designed to be extendable, so every service implemented as a provider</p>
+      <img src="img/tf-providers.png" alt="Providers" style="max-width: 55%">
     </article>
 
     <article>
       <p>Providers and plugins are downloaded automatically into <b>.terraform</b> folder during <b>terraform init</b></p>
+      <img src="img/dot-terraform.png" alt=".terraform" style="max-width: 70%" />
     </article>
 
     <article>
@@ -102,17 +104,17 @@ resource "aws_vpc" "main" {
 
     <article>
       <h2>terraform init</h2>
-      <img src="img/dot-teraform.png" alt=".terraform" style="max-width: 70%" />
+      <img src="img/tf-init.png" alt="init" />
     </article>
 
     <article>
       <h2>terraform plan</h2>
-      <img src="img/tf-plan.png" alt=".terraform" />
+      <img src="img/tf-plan.png" alt="plan" />
     </article>
 
     <article>
       <h2>terraform apply</h2>
-      <img src="img/tf-apply.png" alt=".terraform" />
+      <img src="img/tf-apply.png" alt="apply" />
     </article>
   </section>
 
@@ -130,7 +132,7 @@ resource "aws_vpc" "main" {
 
     <article>
       <h2>Workspaces</h2>
-      <script data-lang="log">
+      <script type="text/html" data-lang="log">
 ➜ terraform workspace new nkbt
 Created and switched to workspace "nkbt"!
 
@@ -145,7 +147,7 @@ nkbt
 
     <article>
       <h2>Using workspace name</h2>
-      <script data-lang="tf">
+      <script type="text/html" data-lang="tf">
 resource "aws_s3_bucket" "www" {
   bucket        = "${terraform.workspace}--workshop"
   #            -> "nikita--workshop"
@@ -158,7 +160,7 @@ resource "aws_s3_bucket" "www" {
   <section id="modules">
     <article>
       <h2>Modules</h2>
-      <script data-lang="tf">
+      <script type="text/html" data-lang="tf">
 module "www" {
  source = "./deployment/www"
 
@@ -184,7 +186,7 @@ module "www_files" {
     <article>
       <h2>State</h2>
       <p>.terraform/terraform.tfstate</p>
-      <script data-lang="json">
+      <script type="text/html" data-lang="json">
 {
   "version": 3,
   "serial": 1,
@@ -198,7 +200,7 @@ module "www_files" {
 
     <article>
       <h2>Remote states</h2>
-      <script data-lang="log">
+      <script type="text/html" data-lang="log">
 ➜ terraform state pull | jq
 
 # it's no magic though!
@@ -216,7 +218,7 @@ woolies-x.tfstate
 
     <article>
       <h2>Remote state</h2>
-      <script data-lang="json">
+      <script type="text/html" data-lang="json">
 {
   "version": 4,
   "terraform_version": "0.14.0",
@@ -246,7 +248,7 @@ woolies-x.tfstate
   <section id="debug">
     <article>
       <h2>TF_LOG=TRACE</h2>
-      <script data-lang="log">
+      <script type="text/html" data-lang="log">
 ➜ TF_LOG=TRACE terraform plan
 2020/12/04 13:31:03 [INFO] Terraform version: 0.14.0
 2020/12/04 13:31:03 [INFO] Go runtime version: go1.15.5
@@ -270,9 +272,46 @@ X-Amz-Request-Id: B9C
     </article>
   </section>
 
-  <section id="quickstart">
+  <section id="install">
     <article>
-      <h2>Let's code</h2>
+      <h2>Install</h2>
+      <script type="text/html" data-lang="log">
+# install Terraform
+➜ brew install terraform
+
+# install AWS CLI
+➜ curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+➜ sudo installer -pkg AWSCLIV2.pkg -target /
+      </script>
+
+      <article>
+        <h2>AWS CLI profiles</h2>
+        <script type="text/html" data-lang="log">
+➜ mkdir -p ~/.aws
+
+➜ echo '
+[workshop]
+region=ap-southeast-2
+output = json
+' >> ~/.aws/config
+
+➜ echo '
+[workshop]
+aws_access_key_id =
+aws_secret_access_key =
+' >> ~/.aws/credentials
+        </script>
+      <p>Fill your aws keys</p>
+    </article>
+
+
+    <article>
+      <h2>Check AWS CLI</h2>
+      <script type="text/html" data-lang="log">
+➜ aws --profile=workshop s3 ls s3://nkbt--workshop--tfstate-v2
+                           PRE env:/
+2020-11-27 14:42:13        156 woolies-x.tfstate
+      </script>
     </article>
   </section>
 
