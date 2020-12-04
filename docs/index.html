@@ -101,36 +101,6 @@ resource "aws_vpc" "main" {
     </article>
 
     <article>
-      <h2>Workspaces</h2>
-      <p>Multiple workspaces to separate deployments but re-use same infrastructure config</p>
-      <ul>
-        <li>terraform workspace list</li>
-        <li>... new</li>
-        <li>... select</li>
-        <li>... delete</li>
-      </ul>
-    </article>
-
-    <article>
-      <h2>Workspaces</h2>
-      <script data-lang="bash">
-> terraform workspace new nikita
-> terraform workspace select nikita
-      </script>
-    </article>
-
-    <article>
-      <h2>Using workspace name</h2>
-      <script data-lang="tf">
-resource "aws_s3_bucket" "www" {
-  bucket        = "${terraform.workspace}--workshop"
-  #            -> "nikita--workshop"
-  acl           = "public-read"
-}
-      </script>
-    </article>
-
-    <article>
       <h2>terraform init</h2>
       <img src="img/dot-teraform.png" alt=".terraform" style="max-width: 70%" />
     </article>
@@ -144,7 +114,48 @@ resource "aws_s3_bucket" "www" {
       <h2>terraform apply</h2>
       <img src="img/tf-apply.png" alt=".terraform" />
     </article>
+  </section>
 
+  <section id="workspaces">
+    <article>
+      <h2>Workspaces</h2>
+      <p>Multiple workspaces to separate deployments but re-use same infrastructure config</p>
+      <ul>
+        <li>terraform workspace list</li>
+        <li>... new</li>
+        <li>... select</li>
+        <li>... delete</li>
+      </ul>
+    </article>
+
+    <article>
+      <h2>Workspaces</h2>
+      <script data-lang="log">
+➜ terraform workspace new nkbt
+Created and switched to workspace "nkbt"!
+
+
+➜ terraform workspace select nkbt
+
+
+➜ terraform workspace show
+nkbt
+      </script>
+    </article>
+
+    <article>
+      <h2>Using workspace name</h2>
+      <script data-lang="tf">
+resource "aws_s3_bucket" "www" {
+  bucket        = "${terraform.workspace}--workshop"
+  #            -> "nikita--workshop"
+  acl           = "public-read"
+}
+      </script>
+    </article>
+  </section>
+
+  <section id="modules">
     <article>
       <h2>Modules</h2>
       <script data-lang="tf">
@@ -165,6 +176,96 @@ module "www_files" {
 
   version = "0.0.5"
 }
+      </script>
+    </article>
+  </section>
+
+  <section id="state">
+    <article>
+      <h2>State</h2>
+      <p>.terraform/terraform.tfstate</p>
+      <script data-lang="json">
+{
+  "version": 3,
+  "serial": 1,
+  "backend": {
+    "type": "s3",
+    "config": {
+      "bucket": "nkbt--workshop--tfstate-v2",
+      "key": "woolies-x.tfstate",
+      </script>
+    </article>
+
+    <article>
+      <h2>Remote states</h2>
+      <script data-lang="log">
+➜ terraform state pull | jq
+
+# it's no magic though!
+
+➜ aws s3 ls --recursive s3://nkbt--workshop--tfstate-v2/
+env:/dev/woolies-x.tfstate
+env:/nikita/woolies-x.tfstate
+env:/prod/woolies-x.tfstate
+env:/staging/woolies-x.tfstate
+woolies-x.tfstate
+
+➜ aws s3 cp s3://nkbt--workshop--tfstate-v2/env:/nikita/woolies-x.tfstate - | jq
+      </script>
+    </article>
+
+    <article>
+      <h2>Remote state</h2>
+      <script data-lang="json">
+{
+  "version": 4,
+  "terraform_version": "0.14.0",
+  "serial": 4,
+  "lineage": "1f204bd0-c268-32c9-2705-14a9bb4deab5",
+  "outputs": {
+    "www_url": {
+      "value": "http://nkbt--workshop--test-nikita.s3-website-ap-southeast-2.amazonaws.com",
+      "type": "string"
+    }
+  },
+  "resources": [{
+      "module": "module.www",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "www",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "bucket": "nkbt--workshop--test-nikita",
+            "bucket_domain_name": "nkbt--workshop--test-nikita.s3.amazonaws.com",
+      </script>
+    </article>
+  </section>
+
+  <section id="debug">
+    <article>
+      <h2>TF_LOG=TRACE</h2>
+      <script data-lang="log">
+➜ TF_LOG=TRACE terraform plan
+2020/12/04 13:31:03 [INFO] Terraform version: 0.14.0
+2020/12/04 13:31:03 [INFO] Go runtime version: go1.15.5
+2020/12/04 13:31:03 [INFO] CLI args: []string{"/usr/local/bin/terraform", "plan"}
+2020/12/04 13:31:03 [DEBUG] Attempting to open CLI config file: /Users/nkbt/.terraformrc
+2020/12/04 13:31:03 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+
+-----------------------------------------------------
+2020/12/04 13:31:06 [DEBUG] [aws-sdk-go] DEBUG: Response s3/ListObjects Details:
+---[ RESPONSE ]--------------------------------------
+HTTP/1.1 200 OK
+Connection: close
+Transfer-Encoding: chunked
+Content-Type: application/xml
+Date: Fri, 04 Dec 2020 02:31:07 GMT
+Server: AmazonS3
+X-Amz-Bucket-Region: ap-southeast-2
+X-Amz-Id-2: Zs+2vPF=
+X-Amz-Request-Id: B9C
       </script>
     </article>
   </section>
