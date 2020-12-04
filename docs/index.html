@@ -1,0 +1,198 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1024" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Terraform Workshop</title>
+
+  <meta name="description" content="Beginner Terraform (AWS) workshop, plus a bit of Github + CircleCI for automation." />
+  <meta name="author" content="Nikita Butenko" />
+
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+
+  <link href="css/impress-demo.css" rel="stylesheet" />
+
+  <link rel="shortcut icon" href="favicon.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <link rel="stylesheet" href="css/highlight/agate.css">
+<!--  <link rel="stylesheet" href="css/highlight/github.css">-->
+</head>
+
+<body class="impress-not-supported">
+
+
+<div class="fallback-message">
+  <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented
+    with a simplified version of this presentation.</p>
+
+  <p>For the best experience please use the latest <b>Chrome</b>, <b>Opera</b>, <b>Safari</b> or <b>Firefox</b>
+    browser.</p>
+</div>
+
+<div id="impress" data-transition-duration="500">
+
+  <section id="title">
+    <article class="title">
+      <h1 class="try">Terraform Workshop</h1>
+      <p class="footnote">Beginner Terraform (AWS) workshop, plus a bit of Github + CircleCI for automation.</p>
+    </article>
+  </section>
+
+
+  <section id="terraform">
+    <article>
+      <h2>Terraform?</h2>
+      <p>Tool for building, changing, and versioning infrastructure.</p>
+      <p><b>Infrastructure as code</b></p>
+    </article>
+
+    <article>
+      <h2>Open-source</h2>
+      <p>Terraform is a free and open-source, written in Go</p>
+      <p><a href="https://github.com/hashicorp/terraform">https://github.com/hashicorp/terraform</a></p>
+    </article>
+
+    <article>
+      <h2>HCL</h2>
+      <p>Terraform uses its own configuration language, but you have an option to use plain JSON</p>
+      <script data-lang="tf">
+resource "aws_vpc" "main" {
+  cidr_block = var.base_cidr_block
+}
+
+<BLOCK TYPE> "<BLOCK LABEL>" "<BLOCK LABEL>" {
+  # Block body
+  <IDENTIFIER> = <EXPRESSION> # Argument
+}
+      </script>
+    </article>
+
+    <article>
+      <h2>Why use HCL</h2>
+      <ul>
+        <li>✅ syntax highlight</li>
+        <li>✅ type checks</li>
+        <li>✅ inline help and suggestions</li>
+        <li>☑️ learn new language</li>
+      </ul>
+    </article>
+
+    <article>
+      <h2>Providers</h2>
+      <p>Terraform is designed to be extendable, so every service implemented as a provider</p>
+    </article>
+
+    <article>
+      <p>Providers and plugins are downloaded automatically into <b>.terraform</b> folder during <b>terraform init</b></p>
+    </article>
+
+    <article>
+      <h2>Workflow</h2>
+      <ul>
+        <li>terraform init</li>
+        <li>terraform plan -out tfplan</li>
+        <li>terraform apply tfplan</li>
+        <li>...</li>
+        <li>PROFIT</li>
+      </ul>
+    </article>
+
+    <article>
+      <h2>Workspaces</h2>
+      <p>Multiple workspaces to separate deployments but re-use same infrastructure config</p>
+      <ul>
+        <li>terraform workspace list</li>
+        <li>... new</li>
+        <li>... select</li>
+        <li>... delete</li>
+      </ul>
+    </article>
+
+    <article>
+      <h2>Workspaces</h2>
+      <script data-lang="bash">
+> terraform workspace new nikita
+> terraform workspace select nikita
+      </script>
+    </article>
+
+    <article>
+      <h2>Using workspace name</h2>
+      <script data-lang="tf">
+resource "aws_s3_bucket" "www" {
+  bucket        = "${terraform.workspace}--workshop"
+  #            -> "nikita--workshop"
+  acl           = "public-read"
+}
+      </script>
+    </article>
+
+    <article>
+      <h2>terraform init</h2>
+      <img src="img/dot-teraform.png" alt=".terraform" style="max-width: 70%" />
+    </article>
+
+    <article>
+      <h2>terraform plan</h2>
+      <img src="img/tf-plan.png" alt=".terraform" />
+    </article>
+
+    <article>
+      <h2>terraform apply</h2>
+      <img src="img/tf-apply.png" alt=".terraform" />
+    </article>
+
+    <article>
+      <h2>Modules</h2>
+      <script data-lang="tf">
+module "www" {
+ source = "./deployment/www"
+
+ www_domain = "i.am.module.variable"
+}
+
+output "www_url" {
+ value = module.www.www_url
+}
+
+module "www_files" {
+  source = "hashicorp/dir/template"
+  # source = "github.com/hashicorp/example"
+  # source = "https://example.com/vpc-module.zip"
+
+  version = "0.0.5"
+}
+      </script>
+    </article>
+  </section>
+
+  <section id="quickstart">
+    <article>
+      <h2>Let's code</h2>
+    </article>
+  </section>
+
+  <section id="overview">
+    <article data-scale="15" data-x="5000" data-y="4000">
+    </article>
+  </section>
+</div>
+
+<ul id="nav">
+</ul>
+
+
+
+<script type="text/javascript" src="js/impress.js"></script>
+<script type="text/javascript" src="js/highlight.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/terraform.js"></script>
+<script type="text/javascript">
+  hljs.registerLanguage('terraform', window.hljsDefineTerraform);
+  hljs.initHighlightingOnLoad();
+</script>
+</body>
+</html>
