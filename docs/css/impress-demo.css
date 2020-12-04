@@ -281,6 +281,14 @@ a:focus {
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
+.step p {
+  text-align: center;
+}
+
+.step p + p {
+  margin-top: 0.5em;
+}
+
 .step h2 {
   display: block;
   font-size: 1.2em;
@@ -456,6 +464,7 @@ a:focus {
   max-height: 90%;
   min-height: 14em;
   overflow-x: auto;
+  white-space: break-spaces;
 }
 
 #nav {
